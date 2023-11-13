@@ -37,15 +37,12 @@ class SpiderUdnSpider(scrapy.Spider):
     allowed_domains = ["udn.com"]
 
     def start_requests(self):
-        yield scrapy.Request(f'https://udn.com/search/word/2/柯')
-        print("aaaa")
+        yield scrapy.Request(f'https://udn.com/search/word/2/{self.keyword}')        
     
-    def parse(self, response, **kwargs):  
-        print("bbbb")              
+    def parse(self, response, **kwargs):          
         articles = response.xpath("//div[@class='story-list__news']")
         count = 0    
-        print("cccc")
-        print(articles)
+        
         for article in articles:            
             photo = article.xpath(".//div[1]/a/picture/img/@src").get()
             link = article.xpath(".//div[1]/a/@href").get()
