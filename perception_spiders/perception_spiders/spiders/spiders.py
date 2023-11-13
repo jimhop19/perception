@@ -44,13 +44,12 @@ class SpiderUdnSpider(scrapy.Spider):
         count = 0    
         
         for article in articles:            
-            photo = article.xpath(".//div[1]/a/picture/img/@src").get()
+            photo = article.xpath(".//div[1]/a/picture/source/@data-srcset").get()
             link = article.xpath(".//div[1]/a/@href").get()
             title = article.xpath(".//div[2]/h2/a/text()").get()
             content = article.xpath(".//div[2]/p/text()").get()
             time = article.xpath(".//div[2]/div/time/text()").get()
-            category = article.xpath(".//div[2]/div/a/text()").get()
-            print("dddd")
+            category = article.xpath(".//div[2]/div/a/text()").get()            
             yield {
                 "title":title,
                 "link":link,
