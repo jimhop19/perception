@@ -1,4 +1,5 @@
 import scrapy
+from scrapy_playwright.page import PageMethod
 
 class SpiderPtsSpider(scrapy.Spider):
     name = "spider_pts"
@@ -98,6 +99,108 @@ class SpiderLtnSpider(scrapy.Spider):
         item_add_time["time"] =  response.xpath("//span[@class='time']/text()").get()
         yield item_add_time
 
+class SpiderLtnAllNewsSpider(scrapy.Spider):
+    name = "spider_ltn_all"
+    allowed_domains = ["search.ltn.com.tw","news.ltn.com.tw"]
+    
+    def start_requests(self):
+        
+        yield scrapy.Request("https://news.ltn.com.tw/list/breakingnews/politics", meta=dict(
+                playwright=True,
+                playwright_include_page=True,
+                playwright_page_methods=[
+                    (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    (PageMethod("wait_for_timeout",300)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),
+                    # (PageMethod("evaluate", "window.scrollBy(0, document.body.scrollHeight)")),
+                    # (PageMethod("wait_for_timeout",200)),                    
+                ]
+            ),)
+        
+
+    async def parse(self, response, **kwargs):
+        print(f'this is {response}')
+        page = response.meta["playwright_page"]
+        await page.close()
+        
+        articles = response.xpath("//div[@class='whitecon boxTitle']/ul/li")
+        
+        for article in articles:
+            photo = article.xpath(".//a/img/@data-src").get()
+            link = article.xpath(".//a/@href").get()
+            title = article.xpath(".//a/@title").get()
+            
+            item = {
+                    "title": title,
+                    "link": link,
+                    "photo": photo,
+                }
+            print(item)
+            yield scrapy.Request(url=link,callback=self.parse_time,cb_kwargs={"item":item})
+
+    def parse_time(self,response,item):
+        item_add_time = item
+        item_add_time["time"] =  response.xpath("//span[@class='time']/text()").get()
+        paragraphs = response.xpath("//div[@class='text boxTitle boxText']/p")
+        article = []
+        for paragraph in paragraphs:            
+            if paragraph.xpath(".//@class").get() == None and paragraph.xpath(".//text()").get() != None:
+                article.append(paragraph.xpath(".//text()").get())
+        item_add_time["content"] = article        
+        yield item_add_time
+
+    
 class SpiderEttodaySpider(scrapy.Spider):
     name = "spider_ettoday"
     allowed_domains = ["www.ettoday.net"]
