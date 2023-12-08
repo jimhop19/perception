@@ -8,16 +8,27 @@
 from itemadapter import ItemAdapter
 from scrapy.exceptions import DropItem
 # from elasticsearch import Elasticsearch
-import json
+import re
 import requests
 
 class DuplicateTitlePipeline:
     def __init__(self):
         self.titles_seen = set()
-    def process_item(self, item, spider):
+    def process_item(self, item, spider):        
         adapter = ItemAdapter(item)
         if item["title"] in self.titles_seen:
             raise DropItem(f"Duplicate item found:{item}")
+        else:
+            self.titles_seen.add(adapter["title"])
+            return item
+        
+class KeywordInTitlePipeline:
+    def __init__(self):
+        self.titles_seen = set()
+    def process_item(self, item, spider):        
+        adapter = ItemAdapter(item)
+        if re.search(spider.keyword,item["title"]) == None:
+            raise DropItem(f"Keyword_not_in_title item found:{item}")
         else:
             self.titles_seen.add(adapter["title"])
             return item

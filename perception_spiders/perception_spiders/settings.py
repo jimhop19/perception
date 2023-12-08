@@ -69,7 +69,8 @@ DOWNLOAD_HANDLERS = {
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
    "perception_spiders.pipelines.DuplicateTitlePipeline": 300,
-   "perception_spiders.pipelines.ElasticSearchPipeline": 500,
+#    "perception_spiders.pipelines.KeywordInTitlePipeline": 400,
+#    "perception_spiders.pipelines.ElasticSearchPipeline": 500,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
