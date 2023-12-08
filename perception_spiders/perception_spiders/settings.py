@@ -20,10 +20,10 @@ NEWSPIDER_MODULE = "perception_spiders.spiders"
 ROBOTSTXT_OBEY = False
 
 
-DOWNLOAD_HANDLERS = {
-    "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
-    "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
-}
+# DOWNLOAD_HANDLERS = {
+#     "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
+#     "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
+# }
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
