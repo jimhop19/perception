@@ -7,7 +7,11 @@ class SpiderPtsSpider(scrapy.Spider):
     allowed_domains = ["news.pts.org.tw"]
     
     def start_requests(self):
-        yield scrapy.Request(f'https://news.pts.org.tw/search/{self.keyword}')        
+        headers={"User-Agent":'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
+        yield scrapy.Request(
+            url=f'https://news.pts.org.tw/search/{self.keyword}',
+            headers=headers
+            )
 
     def parse(self, response, **kwargs):
         articles = response.xpath("//ul[@class='list-unstyled search-list relative-news-list-content']/li")
@@ -246,7 +250,7 @@ class SpiderCnaSpider(scrapy.Spider):
         articles = response.xpath("//ul[@class='mainList']/li")
         count = 0
         for article in articles:
-            link = article.xpath(".//a/@href").get()
+            link = "https://www.cna.com.tw"+article.xpath(".//a/@href").get()            
             item = {}
             yield scrapy.Request(url=link,callback=self.parse_category_and_content,cb_kwargs={"item":item})   
     
